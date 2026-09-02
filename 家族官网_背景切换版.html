@@ -1,0 +1,1242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>别闹我有药 - 游戏家族主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+            scroll-behavior: smooth;
+        }
+        body {
+            background: linear-gradient(180deg, #ffd9ec 0%, #fff3f8 45%, #ffffff 100%);
+            background-attachment: fixed;
+            color: #4a3350;
+            line-height: 1.7;
+            opacity: 0;
+            animation: bodyFade 1s ease forwards;
+        }
+        @keyframes bodyFade {
+            to { opacity: 1; }
+        }
+        :root {
+            --main-color: #9d4edd;
+            --main-color-dark: #7b2cbf;
+            --header-bg: rgba(123, 44, 191, 0.22);
+            --header-bg-scroll: rgba(123, 44, 191, 0.42);
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* ========== 顶部栏｜紫色毛玻璃效果 ========== */
+        header {
+            background: var(--header-bg);
+            backdrop-filter: blur(18px) saturate(150%);
+            -webkit-backdrop-filter: blur(18px) saturate(150%);
+            border-bottom: 1px solid var(--main-color, #9d4edd);
+            padding: 1.2rem 0;
+            box-shadow: 0 4px 20px rgba(123, 44, 191, 0.18);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            transition: background 0.35s ease, border-color 0.4s;
+        }
+        .header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap:12px;
+        }
+        .family-name {
+            font-size: 1.7rem;
+            font-weight:bold;
+        }
+        .top-link a {
+            display:inline-block;
+            background:#fff;
+            color:var(--main-color, #7b2cbf);
+            padding:8px 20px;
+            border-radius:30px;
+            text-decoration:none;
+            font-weight:600;
+            transition: 0.35s ease;
+        }
+        .top-link a:hover{
+            transform: translateY(-3px);
+            box-shadow:0 6px 18px var(--main-color, rgba(157,78,221,0.55));
+        }
+        /* 家族成立计时卡片 */
+        .time-card{
+            max-width:760px;
+            margin:0 auto;
+            background:rgba(123,44,191,0.12);
+            border:1px solid var(--main-color, #9d4edd);
+            border-radius:16px;
+            padding:24px;
+            text-align:center;
+            transition: border-color 0.4s;
+        }
+        .time-card-title{
+            font-size:1.2rem;
+            color:var(--main-color, #9d4edd);
+            margin-bottom:12px;
+            transition: color 0.4s;
+        }
+        .time-card-value{
+            font-size:1.4rem;
+            font-weight:bold;
+            color:#5a3d6b;
+            font-family:Consolas,monospace;
+        }
+        /* 跳转按钮区域 */
+        .jump-btns{
+            display:flex;
+            gap:20px;
+            justify-content:center;
+            flex-wrap:wrap;
+            margin-top:10px;
+        }
+        .jump-btn{
+            display:inline-block;
+            padding:12px 32px;
+            border-radius:30px;
+            text-decoration:none;
+            font-weight:bold;
+            font-size:1.05rem;
+            transition:0.35s ease;
+        }
+        .jump-btn:hover{
+            transform: translateY(-4px);
+        }
+        .jump-btn.purple{
+            background:#b898e8;
+            color:#2a1a3a;
+            box-shadow:0 4px 14px rgba(184,152,232,0.3);
+        }
+        .jump-btn.purple:hover{
+            box-shadow:0 8px 22px rgba(184,152,232,0.5);
+        }
+        .jump-btn.pink{
+            background:#f8a8d0;
+            color:#3a1a2a;
+            box-shadow:0 4px 14px rgba(248,168,208,0.3);
+        }
+        .jump-btn.pink:hover{
+            box-shadow:0 8px 22px rgba(248,168,208,0.5);
+        }
+        /* 板块 滚动动画 */
+        .section{
+            padding:60px 0;
+            opacity:0;
+            transform: translateY(40px);
+            transition: all 0.75s ease-out;
+        }
+        .section.active{
+            opacity:1;
+            transform: translateY(0);
+        }
+        .sec-title{
+            text-align:center;
+            font-size:1.6rem;
+            color:var(--main-color, #9d4edd);
+            margin-bottom:36px;
+            transition: color 0.4s;
+        }
+        .sec-title::after{
+            content:"";
+            display:block;
+            width:70px;
+            height:3px;
+            background:linear-gradient(90deg,var(--main-color-dark,#7b2cbf),var(--main-color,#9d4edd));
+            margin:10px auto 0;
+            border-radius:2px;
+            transition: background 0.4s;
+        }
+        /* 家族简介区域 【在这里改简介文字】 */
+        .intro-card{
+            background:rgba(123,44,191,0.12);
+            border:1px solid var(--main-color, #9d4edd);
+            border-radius:16px;
+            padding:28px;
+            text-align:center;
+            transition: border-color 0.4s;
+        }
+        /* =====家族分布新增样式===== */
+        .distribution-card {
+            max-width: 760px;
+            margin: 0 auto;
+            background: rgba(123, 44, 191, 0.12);
+            border: 1px solid var(--main-color, #9d4edd);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            transition: 0.35s ease, border‑color 0.4s;
+        }
+        .distribution-card:hover {
+            box-shadow: 0 8px 26px rgba(123, 44, 191, 0.32);
+        }
+        .distribution-btn {
+            background: linear-gradient(135deg, #5a96ff, #82c8ff);
+            color: #ffffff;
+            border: none;
+            border-radius: 30px;
+            padding: 12px 28px;
+            font-size: 1.05rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.35s ease;
+            box-shadow: 0 4px 14px rgba(90, 150, 255, 0.25);
+        }
+        .distribution-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(90, 150, 255, 0.35);
+        }
+        .distribution-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.45s ease, margin-top 0.45s ease;
+        }
+        .distribution-content.show {
+            max-height: 600px;
+            margin-top: 22px;
+        }
+        .id-text{
+            color:#5a4a66;
+            font-size:1rem;
+            background:rgba(255,255,255,0.035);
+            border:1px solid var(--main-color, #9d4edd);
+            border-radius:12px;
+            padding:14px 18px;
+            margin-bottom:18px;
+            transition: border‑color 0.4s;
+        }
+        .sub-title-wall {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+        .sub-title-item {
+            padding: 14px 20px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: bold;
+            transition: 0.35s ease;
+            cursor: not-allowed;
+            border: 1px solid transparent;
+        }
+        .sub-title-item:hover {
+            transform: translateY(-5px);
+        }
+        .sub-title-item.gold {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(255, 180, 0, 0.18));
+            color: #ffd700;
+            border-color: rgba(255, 215, 0, 0.35);
+            box-shadow: 0 4px 14px rgba(255, 215, 0, 0.15);
+        }
+        .sub-title-item.purple {
+            background: linear-gradient(135deg, rgba(123, 44, 191, 0.18), rgba(157, 78, 221, 0.18));
+            color: #9d4edd;
+            border-color: rgba(157, 78, 221, 0.35);
+            box-shadow: 0 4px 14px rgba(123, 44, 191, 0.15);
+        }
+        .sub-title-item.blue {
+            background: linear-gradient(135deg, rgba(90, 150, 255, 0.18), rgba(130, 200, 255, 0.18));
+            color: #7bb8ff;
+            border-color: rgba(90, 150, 255, 0.35);
+            box-shadow: 0 4px 14px rgba(90, 150, 255, 0.15);
+        }
+        /* 成员卡片 */
+        .member-box{
+            display:flex;
+            justify-content:center;
+            gap:28px;
+            flex-wrap:wrap;
+        }
+        .member-card{
+            width:270px;
+            background:rgba(123,44,191,0.16);
+            border:1px solid var(--main-color, #9d4edd);
+            border-radius:20px;
+            padding:32px 22px;
+            text-align:center;
+            transition:0.4s ease, border‑color 0.4s;
+        }
+        .member-card:hover{
+            transform: translateY(-7px);
+            box-shadow:0 8px 26px rgba(123,44,191,0.32);
+        }
+        .role-tag{
+            display:inline-block;
+            background:linear-gradient(135deg,var(--main-color-dark,#7b2cbf),var(--main-color,#9d4edd));
+            color:#ffffff;
+            padding:4px 14px;
+            border-radius:20px;
+            font-size:0.9rem;
+            margin-bottom:14px;
+            transition: background 0.4s;
+        }
+        .m-name{
+            font-size:1.4rem;
+            margin-bottom:18px;
+        }
+        .qq-btn{
+            display:inline-block;
+            background:var(--main-color,#9d4edd);
+            color:#fff;
+            text-decoration:none;
+            padding:9px 20px;
+            border-radius:30px;
+            transition:0.35s ease, background 0.4s;
+        }
+        .qq-btn:hover{
+            background:var(--main-color-dark,#7b2cbf);
+            box-shadow:0 4px 14px rgba(123,44,191,0.45);
+        }
+        /* =====家族称号墙新增样式===== */
+        .title-wall {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            max-width: 760px;
+            margin: 0 auto;
+        }
+        .title-item {
+            padding: 14px 20px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 1.05rem;
+            font-weight: bold;
+            transition: 0.35s ease;
+            cursor: not-allowed;
+            border: 1px solid transparent;
+        }
+        .title-item:hover {
+            transform: translateY(-5px);
+        }
+        .title-item.gold {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(255, 180, 0, 0.18));
+            color: #ffd700;
+            border-color: rgba(255, 215, 0, 0.35);
+            box-shadow: 0 4px 14px rgba(255, 215, 0, 0.15);
+        }
+        .title-item.purple {
+            background: linear-gradient(135deg, rgba(123, 44, 191, 0.18), rgba(157, 78, 221, 0.18));
+            color: #9d4edd;
+            border-color: rgba(157, 78, 221, 0.35);
+            box-shadow: 0 4px 14px rgba(123, 44, 191, 0.15);
+        }
+        .title-item.blue {
+            background: linear-gradient(135deg, rgba(90, 150, 255, 0.18), rgba(130, 200, 255, 0.18));
+            color: #7bb8ff;
+            border-color: rgba(90, 150, 255, 0.35);
+            box-shadow: 0 4px 14px rgba(90, 150, 255, 0.15);
+        }
+        /* 战绩截图板块 */
+        .screenshot-card{
+            background:rgba(123,44,191,0.12);
+            border:1px solid var(--main-color, #9d4edd);
+            border-radius:16px;
+            padding:24px;
+            text-align:center;
+            transition:0.35s ease, border‑color 0.4s;
+        }
+        .screenshot-card:hover{
+            box-shadow:0 8px 26px rgba(123,44,191,0.32);
+        }
+        .screenshot-card img{
+            width:100%;
+            border-radius:12px;
+            display:block;
+        }
+        .screenshot-desc{
+            margin-top:14px;
+            color:#6b5b78;
+            font-size:0.95rem;
+        }
+        footer{
+            padding:32px 0;
+            text-align:center;
+            color:#8a7a94;
+            font-size:0.88rem;
+            border-top:1px solid var(--main-color, #9d4edd);
+            transition: border‑color 0.4s;
+        }
+        /* ---百宝箱弹窗【自定义fixed+flex，永远屏幕居中，修复chrome sticky bug】--- */
+        .tool-mask{
+            position:fixed;
+            inset:0;
+            background:rgba(0,0,0,0.65);
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            z-index:999;
+            display:none;
+        }
+        .tool-box{
+            background:#1b1b2b;
+            color:#fff;
+            border:1px solid var(--main-color,#9d4edd);
+            border-radius:16px;
+            padding:28px 24px;
+            min-width:300px;
+            text-align:center;
+            transition: border‑color 0.4s;
+        }
+        .tool-title{
+            color:var(--main-color,#b898e8);
+            margin-bottom:12px;
+            font-size:1.2rem;
+            transition: color 0.4s;
+        }
+        .tool-result{
+            font-size:2rem;
+            font-weight:bold;
+            margin:10px 0 20px;
+            font-family:Consolas,monospace;
+        }
+        .tool-close-btn{
+            background:var(--main-color,#9d4edd);
+            color:#fff;
+            border:none;
+            padding:8px 24px;
+            border-radius:24px;
+            font-size:1rem;
+            cursor:pointer;
+            transition: background 0.4s;
+        }
+        .tool-close-btn:hover{
+            background:var(--main-color-dark,#7b2cbf);
+        }
+        .tool-btn-wrap{
+            display:flex;
+            gap:16px;
+            justify-content:center;
+            flex-wrap:wrap;
+        }
+        .tool-btn{
+            background:linear-gradient(135deg,var(--main-color-dark,#7b2cbf),var(--main-color,#9d4edd));
+            color:#fff;
+            border:none;
+            border-radius:30px;
+            padding:12px 28px;
+            font-size:1.05rem;
+            font-weight:bold;
+            cursor:pointer;
+            transition:0.35s ease,background 0.4s;
+        }
+        .tool-btn:hover{
+            transform:translateY(-4px);
+            box-shadow:0 6px 20px var(--main-color, rgba(123,44,191,0.4));
+        }
+        
+        /* ========== 背景切换：暗色模式 ========== */
+        body.dark-mode {
+            background: #000000 !important;
+            color: #d0c0e0 !important;
+        }
+        body.dark-mode .time-card,
+        body.dark-mode .intro-card,
+        body.dark-mode .distribution-card,
+        body.dark-mode .screenshot-card {
+            background: rgba(123, 44, 191, 0.18) !important;
+            border-color: #9d4edd !important;
+        }
+        body.dark-mode .time-card-title {
+            color: #b898e8 !important;
+        }
+        body.dark-mode .time-card-value {
+            color: #e0d0f0 !important;
+        }
+        body.dark-mode .sec-title {
+            color: #b898e8 !important;
+        }
+        body.dark-mode .id-text {
+            color: #d0c0e0 !important;
+            background: rgba(123, 44, 191, 0.1) !important;
+        }
+        body.dark-mode .member-card {
+            background: rgba(123, 44, 191, 0.18) !important;
+            border-color: #9d4edd !important;
+        }
+        body.dark-mode .m-name {
+            color: #e0d0f0 !important;
+        }
+        body.dark-mode .screenshot-desc {
+            color: #c0b0d0 !important;
+        }
+        body.dark-mode footer {
+            color: #b0a0c0 !important;
+            border-top-color: #7b2cbf !important;
+        }
+        body.dark-mode .tool-mask {
+            background: rgba(40, 20, 60, 0.85) !important;
+        }
+        body.dark-mode .tool-box {
+            background: #1a0a2e !important;
+            border-color: #9d4edd !important;
+        }
+        body.dark-mode .top-link a {
+            background: rgba(157, 78, 221, 0.3) !important;
+            color: #e0d0f0 !important;
+        }
+        body.dark-mode .jump-btn.purple {
+            background: #7b2cbf !important;
+            color: #f0e0ff !important;
+        }
+        body.dark-mode .jump-btn.pink {
+            background: #c94b8a !important;
+            color: #ffe0f0 !important;
+        }
+        body.dark-mode .sub-title-item.gold {
+            color: #ffd700 !important;
+            border-color: rgba(255, 215, 0, 0.35) !important;
+        }
+        body.dark-mode .sub-title-item.purple {
+            color: #b898e8 !important;
+            border-color: rgba(157, 78, 221, 0.35) !important;
+        }
+        body.dark-mode .sub-title-item.blue {
+            color: #82c8ff !important;
+            border-color: rgba(90, 150, 255, 0.35) !important;
+        }
+        body.dark-mode .title-item.gold {
+            color: #ffd700 !important;
+            border-color: rgba(255, 215, 0, 0.35) !important;
+        }
+        body.dark-mode .title-item.purple {
+            color: #b898e8 !important;
+            border-color: rgba(157, 78, 221, 0.35) !important;
+        }
+        body.dark-mode .title-item.blue {
+            color: #82c8ff !important;
+            border-color: rgba(90, 150, 255, 0.35) !important;
+        }
+        body.dark-mode .family-name {
+            color: #e0d0f0 !important;
+        }
+        body.dark-mode .role-tag {
+            background: linear-gradient(135deg, #7b2cbf, #9d4edd) !important;
+        }
+        body.dark-mode .tool-title {
+            color: #b898e8 !important;
+        }
+        body.dark-mode .tool-result {
+            color: #e0d0f0 !important;
+        }
+        /* 切换按钮样式 */
+        .theme-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(157, 78, 221, 0.25);
+            color: #9d4edd;
+            border: 1px solid #9d4edd;
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 0.92rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.35s ease;
+            font-family: "Microsoft Yahei", sans-serif;
+        }
+        .theme-toggle-btn:hover {
+            background: rgba(157, 78, 221, 0.45);
+            box-shadow: 0 4px 14px rgba(123, 44, 191, 0.4);
+            transform: translateY(-2px);
+        }
+        body.dark-mode .theme-toggle-btn {
+            background: rgba(201, 75, 138, 0.3);
+            color: #f0d0e0;
+            border-color: #c94b8a;
+        }
+        body.dark-mode .theme-toggle-btn:hover {
+            background: rgba(201, 75, 138, 0.5);
+            box-shadow: 0 4px 14px rgba(201, 75, 138, 0.4);
+        }
+
+        @media(max-width:700px){
+            .family-name{
+                font-size:1.3rem;
+            }
+            .member-card{
+                width:100%;
+            }
+            .title-wall {
+                grid-template-columns: 1fr;
+            }
+            .sub-title-wall{
+                grid-template-columns:1fr;
+            }
+            .tool-box{
+                width:90%;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部：QQ群链接放在最前面 -->
+<header id="mainHeader">
+    <div class="container header-wrap">
+        <div class="family-name">别闹我有药</div>
+        <div class="top-link">
+            <a href="https://qun.qq.com/universal-share/share?ac=1&svctype=5&tempid=h5_group_info&busi_data=eyJncm91cENvZGUiOiIxMDQ1NDcyNjEwIn0%3D" target="_blank">
+                <i class="fa-solid fa-users"></i> 加入QQ群
+            </a>
+        </div>
+        <button class="theme-toggle-btn" id="themeToggle" title="切换背景">
+            <i class="fa-solid fa-circle-half-stroke"></i> 切换背景
+        </button>
+    </div>
+</header>
+<!-- 家族成立计时板块【新增】 -->
+<section class="section">
+    <div class="container">
+        <div class="time-card">
+            <div class="time-card-title">⏳ 家族成立时长（成立于2019‑10‑18）</div>
+            <div class="time-card-value" id="familyTimer"></div>
+        </div>
+    </div>
+</section>
+<!-- 跳转按钮区域 -->
+<section class="section">
+    <div class="container">
+        <div class="jump-btns">
+            <a href="https://dmm-web.brmyx.com/tpbsn/pc" target="_blank" class="jump-btn purple">
+                逃跑吧少年官网
+            </a>
+            <a href="https://fengling1314ovo.github.io" target="_blank" class="jump-btn pink">
+                🌸枫铃工具箱
+            </a>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族简介</h2>
+        <!-- ======================
+            修改家族简介：改下面p标签里面文字即可
+        ====================== -->
+        <div class="intro-card">
+            <p>家族招人周二凌晨满活跃 ，点右上角加入QQ群可预约进家族</p>
+        </div>
+    </div>
+</section>
+<!-- =========家族分布板块========= -->
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族分部</h2>
+        <div class="distribution-card">
+            <button class="distribution-btn" onclick="toggleDistribution()">
+                鑫哲旧梦
+            </button>
+            <div class="distribution-content" id="distributionContent">
+                <div class="id-text">鑫哲旧梦 ID：10219</div>
+                <div class="sub-title-wall">
+                    <div class="sub-title-item gold">黑化的新人</div>
+                    <div class="sub-title-item purple">副组长</div>
+                    <div class="sub-title-item blue">技术型</div>
+                    <div class="sub-title-item blue">颜值担当</div>
+                    <div class="sub-title-item blue">正式族员</div>
+                    <div class="sub-title-item blue">族员</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族核心管理</h2>
+        <div class="member-box">
+            <!-- 族长 -->
+            <div class="member-card">
+                <div class="role-tag">家族族长</div>
+                <div class="m-name">青空空</div>
+                <a class="qq-btn" href="mqq://card/show_pslcard?src_type=internal&version=1&uin=3497382642&card_type=person&source=sharecard">
+                    <i class="fa-brands fa-qq"></i> 打开QQ资料
+                </a>
+            </div>
+            <!-- 副组长 -->
+            <div class="member-card">
+                <div class="role-tag">副组长</div>
+                <div class="m-name">小药神青空（枫铃）</div>
+                <a class="qq-btn" href="mqq://card/show_pslcard?src_type=internal&version=1&uin=3817304344&card_type=person&source=sharecard">
+                    <i class="fa-brands fa-qq"></i> 打开QQ资料
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- 家族称号板块 -->
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族称号</h2>
+        <div class="title-wall">
+            <div class="title-item gold">陆一雪莲</div>
+            <div class="title-item purple">伍一大芸</div>
+            <div class="title-item blue">肆一龙葵</div>
+            <div class="title-item blue">叁一竹沥</div>
+            <div class="title-item blue">贰一白芷</div>
+            <div class="title-item blue">壹一半夏</div>
+        </div>
+    </div>
+</section>
+<!-- 家族周排行 -->
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族周排行</h2>
+        <div class="screenshot-card">
+            <img src="https://picui.ogmua.cn/s1/2026/09/02/6a97ecc5eab7f.webp" alt="家族周活跃榜截图">
+            <div class="screenshot-desc">家族周活跃榜 · 当前第一名</div>
+        </div>
+    </div>
+</section>
+<!-- 家族月排行（复制板块，更换图片地址） -->
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族月排行</h2>
+        <div class="screenshot-card">
+            <img src="https://picui.ogmua.cn/s1/2026/09/02/6a9828aeba835.webp" alt="家族月活跃榜截图">
+            <div class="screenshot-desc">家族月活跃榜 · 当前第一名</div>
+        </div>
+    </div>
+</section>
+<!-- ==========百宝箱【新增，页面最底部，footer前面】========== -->
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">百宝箱</h2>
+        <div class="tool-btn-wrap">
+            <button class="tool-btn" onclick="openLuckPopup()">🎲 今日人品</button>
+            <button class="tool-btn" onclick="openDicePopup()">🎲 掷骰子</button>
+            <button class="tool-btn" onclick="openCoinPopup()">🪙 抛硬币</button>
+            <button class="tool-btn" onclick="randomTheme()">❓随机主题色</button>
+            <button class="tool-btn" onclick="openRandomPopup()">🎯 随机数</button>
+            <button class="tool-btn" onclick="openFortunePopup()">🍀 今日运势</button>
+            <button class="tool-btn" onclick="openQuotePopup()">📜 随机语录</button>
+            <button class="tool-btn" onclick="openGachaPopup()">🎰 抽卡模拟器</button>
+            <button class="tool-btn" onclick="openGuessNumber()">🎮 猜数字</button>
+            <button class="tool-btn" onclick="openRPS()">🪨 石头剪刀布</button>
+            <button class="tool-btn" onclick="openSlotMachine()">🎰 老虎机</button>
+            <button class="tool-btn" onclick="openMagic8Ball()">🔮 魔法8球</button>
+        </div>
+    </div>
+</section>
+<!-- 自定义弹窗遮罩盒子（替换原生dialog） -->
+<div class="tool-mask" id="toolMask">
+    <div class="tool-box">
+        <div class="tool-title" id="dialogTitle"></div>
+        <div class="tool-result" id="dialogResult"></div>
+        <button class="tool-close-btn" onclick="closeToolDialog()">关闭</button>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <p>本网站为玩家家族自制站点，与游戏官方无任何关联。所有信息手动录入，仅用于社群交流，不收集账号密码。</p>
+    </div>
+</footer>
+<script>
+//家族成立时间：2019‑10‑18 00:00:00
+const startDate = new Date('2019-10-18 00:00:00');
+const timerDom = document.getElementById('familyTimer');
+function getDateDiff(start, now){
+    let y = now.getFullYear() - start.getFullYear();
+    let m = now.getMonth() - start.getMonth();
+    let d = now.getDate() - start.getDate();
+    if(d < 0){
+        m -= 1;
+        const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        d += lastMonth.getDate();
+    }
+    if(m < 0){
+        y -= 1;
+        m += 12;
+    }
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    const ss = String(now.getSeconds()).padStart(2,'0');
+    return `${y}年${m}月${d}日 ${hh}:${mm}:${ss}`;
+}
+function updateTimer(){
+    const now = new Date();
+    timerDom.innerText = getDateDiff(startDate, now);
+}
+updateTimer();
+setInterval(updateTimer,1000);
+// 滚动视口动画
+const sections = document.querySelectorAll('.section');
+const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(item=>{
+        if(item.isIntersecting){
+            item.target.classList.add('active');
+        }
+    })
+},{threshold:0.15});
+sections.forEach(s=>observer.observe(s));
+
+// 滚动时毛玻璃加深【重写，兼容主题色变量】
+const headerDom = document.querySelector('#mainHeader');
+let isGradientHeader = false;
+window.addEventListener('scroll',()=>{
+    if(isGradientHeader) return;
+    if(window.scrollY > 40){
+        headerDom.style.background = 'var(--header-bg-scroll)';
+    }else{
+        headerDom.style.background = 'var(--header-bg)';
+    }
+})
+
+//家族分布折叠展开
+function toggleDistribution() {
+    const content = document.getElementById('distributionContent');
+    content.classList.toggle('show');
+}
+
+// =========百宝箱工具【替换为自定义居中弹窗】==========
+const toolMask = document.getElementById('toolMask');
+const dialogTitle = document.getElementById('dialogTitle');
+const dialogResult = document.getElementById('dialogResult');
+
+//打开弹窗
+function showMask(){
+    toolMask.style.display="flex";
+}
+//关闭弹窗
+function closeToolDialog(){
+    toolMask.style.display="none";
+}
+//点击遮罩黑色区域关闭
+toolMask.addEventListener('click',e=>{
+    if(e.target === toolMask){
+        closeToolDialog();
+    }
+})
+//ESC按键关闭弹窗
+window.addEventListener('keydown',e=>{
+    if(e.key === 'Escape'){
+        closeToolDialog();
+    }
+})
+
+//1.今日人品（每次点击完全随机0‑100）
+function openLuckPopup(){
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = today.getMonth()+1;
+    const d = today.getDate();
+    const score = Math.floor(Math.random() * 101);
+    let desc;
+    if(score ===100) desc = "✨传说中的欧皇！";
+    else if(score >=80) desc = "🔥运气爆棚";
+    else if(score >=60) desc = "😊今天运势不错";
+    else if(score >=40) desc = "😐平平淡淡";
+    else if(score >=20) desc = "😔有点倒霉";
+    else desc = "💀非酋降临";
+
+    dialogTitle.innerText = `📅 ${y}年${m}月${d}日`;
+    dialogResult.innerText = `人品值：${score}\n${desc}`;
+    showMask();
+}
+
+//2.掷骰子【1‑6标准六面骰子】
+function openDicePopup(){
+    const num = Math.floor(Math.random()*6)+1;
+    dialogTitle.innerText = "🎲 掷骰子";
+    dialogResult.innerText = `点数：${num}`;
+    showMask();
+}
+
+//3.抛硬币
+function openCoinPopup(){
+    const res = Math.random()>0.5 ? "🟡 正面" : "⚫ 反面";
+    dialogTitle.innerText = "🪙 抛硬币";
+    dialogResult.innerText = res;
+    showMask();
+}
+
+//4.❓随机主题色【修复顶部header同步变色】
+function randomTheme(){
+    const themeList = [
+        {name:"粉色", main:"#e868a2", dark:"#b5477c"},
+        {name:"绿色", main:"#36c975", dark:"#239957"},
+        {name:"青色", main:"#22cbd0", dark:"#17979b"},
+        {name:"蓝色", main:"#4288ff", dark:"#2664d8"},
+        {name:"金色", main:"#ffc822", dark:"#d8a40e"},
+        {name:"红色", main:"#ff4c5c", dark:"#d12c3b"},
+        {name:"粉青渐变", gradient:true}
+    ];
+    const pick = themeList[Math.floor(Math.random()*themeList.length)];
+    const root = document.documentElement;
+    if(pick.gradient){
+        isGradientHeader = true;
+        root.style.setProperty('--main-color','#ff77bb');
+        root.style.setProperty('--main-color-dark','#22cbd0');
+        //渐变模式顶部栏
+        headerDom.style.backgroundImage = "linear-gradient(90deg, rgba(255,119,187,0.22),rgba(34,203,208,0.22))";
+        headerDom.style.background = "";
+    }else{
+        isGradientHeader = false;
+        root.style.setProperty('--main-color', pick.main);
+        root.style.setProperty('--main-color-dark', pick.dark);
+        //普通颜色：设置css变量给header半透明底色
+        root.style.setProperty('--header-bg', pick.main + "38");
+        root.style.setProperty('--header-bg-scroll', pick.main + "66");
+        headerDom.style.backgroundImage = "";
+        //手动触发一次滚动判断
+        if(window.scrollY >40){
+            headerDom.style.background = 'var(--header-bg-scroll)';
+        }else{
+            headerDom.style.background = 'var(--header-bg)';
+        }
+    }
+}
+
+//5.🎯 随机数生成器
+function openRandomPopup(){
+    dialogTitle.innerText = "🎯 随机数生成器";
+    dialogResult.innerHTML = `
+        <div style="font-size:1rem;margin-bottom:12px;color:#ccc;">
+            <span>最小值</span>
+            <input type="number" id="randMin" value="1" style="width:70px;padding:6px 10px;border-radius:8px;border:1px solid #9d4edd;background:#2a2a3a;color:#fff;text-align:center;margin:0 8px;">
+            <span>最大值</span>
+            <input type="number" id="randMax" value="100" style="width:70px;padding:6px 10px;border-radius:8px;border:1px solid #9d4edd;background:#2a2a3a;color:#fff;text-align:center;margin:0 8px;">
+        </div>
+        <div style="font-size:2.5rem;font-weight:bold;color:#ffd700;font-family:Consolas,monospace;margin:16px 0;" id="randResult">--</div>
+        <button class="tool-close-btn" onclick="generateRandom()" style="margin-right:8px;">生成</button>
+    `;
+    showMask();
+}
+function generateRandom(){
+    const min = parseInt(document.getElementById('randMin').value) || 1;
+    const max = parseInt(document.getElementById('randMax').value) || 100;
+    if(min >= max){
+        document.getElementById('randResult').innerText = "范围错误";
+        return;
+    }
+    const num = Math.floor(Math.random() * (max - min + 1)) + min;
+    document.getElementById('randResult').innerText = num;
+}
+
+//6.🍀 今日运势
+function openFortunePopup(){
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = today.getMonth()+1;
+    const d = today.getDate();
+    const categories = [
+        {label:"💼 事业运", key:"career"},
+        {label:"💕 爱情运", key:"love"},
+        {label:"💰 财运", key:"money"},
+        {label:"🏃 健康运", key:"health"},
+        {label:"🎮 游戏运", key:"game"}
+    ];
+    let total = 0;
+    let html = `<div style="font-size:1rem;color:#b898e8;margin-bottom:10px;">📅 ${y}年${m}月${d}日</div>`;
+    categories.forEach(cat=>{
+        const stars = Math.floor(Math.random()*5)+1;
+        total += stars;
+        const starStr = '★'.repeat(stars) + '☆'.repeat(5-stars);
+        html += `<div style="display:flex;justify-content:space-between;padding:6px 12px;margin:4px 0;background:rgba(157,78,221,0.15);border-radius:8px;font-size:0.95rem;">
+            <span style="color:#ccc;">${cat.label}</span>
+            <span style="color:#ffd700;letter-spacing:2px;">${starStr}</span>
+        </div>`;
+    });
+    const avg = total / categories.length;
+    let overall;
+    if(avg >= 4.5) overall = "🌟 大吉大利，今天做什么都顺！";
+    else if(avg >= 3.5) overall = "✨ 运势不错，把握机会！";
+    else if(avg >= 2.5) overall = "😊 运势平平，稳扎稳打";
+    else if(avg >= 1.5) overall = "😐 运势偏低，低调行事";
+    else overall = "🌧️ 运势较差，小心为上";
+    html += `<div style="margin-top:12px;font-size:1.05rem;color:#ffd7a8;">${overall}</div>`;
+    dialogTitle.innerText = "🍀 今日运势";
+    dialogResult.innerHTML = html;
+    showMask();
+}
+
+//7.📜 随机语录
+const quoteList = [
+    {text:"生活就像一盒巧克力，你永远不知道下一颗是什么味道。", author:"—— 阿甘正传"},
+    {text:"咸鱼翻身，还是咸鱼。", author:"—— 网络语录"},
+    {text:"只要你肯吃苦，就有吃不完的苦。", author:"—— 打工人语录"},
+    {text:"不要灰心，人生就是这样，起起落落落落落落。", author:"—— 网络语录"},
+    {text:"你全力以赴的样子，真的很像在做无用功。", author:"—— 毒鸡汤"},
+    {text:"世上无难事，只要肯放弃。", author:"—— 网络语录"},
+    {text:"比你优秀的人还在努力，那你努力有什么用？", author:"—— 毒鸡汤"},
+    {text:"今天不开心没关系，反正明天也不会好过。", author:"—— 网络语录"},
+    {text:"万事开头难，中间难，结尾也难。", author:"—— 网络语录"},
+    {text:"游戏可以输，心态不能崩。", author:"—— 玩家语录"},
+    {text:"不怕神一样的对手，就怕猪一样的队友。", author:"—— 玩家语录"},
+    {text:"赢了一起狂，输了一起扛。", author:"—— 玩家语录"},
+    {text:"技术不够，装备来凑；装备不够，运气来凑。", author:"—— 玩家语录"},
+    {text:"努力不一定成功，但不努力一定很舒服。", author:"—— 毒鸡汤"},
+    {text:"家族的意义，就是有人陪你一起菜。", author:"—— 别闹我有药"},
+    {text:"周二凌晨满活跃，我们是认真的。", author:"—— 别闹我有药"},
+    {text:"抽卡穷三代，强化毁一生。", author:"—— 玩家语录"},
+    {text:"只要我退得够快，失败就追不上我。", author:"—— 玩家语录"},
+    {text:"今天也是充满希望的一天呢（并没有）。", author:"—— 网络语录"},
+    {text:"欧皇的快乐，非酋想象不到。", author:"—— 玩家语录"}
+];
+let currentQuoteIdx = -1;
+function openQuotePopup(){
+    showRandomQuote();
+    dialogTitle.innerText = "📜 随机语录";
+    showMask();
+}
+function showRandomQuote(){
+    let idx;
+    do{
+        idx = Math.floor(Math.random() * quoteList.length);
+    }while(idx === currentQuoteIdx && quoteList.length > 1);
+    currentQuoteIdx = idx;
+    dialogResult.innerHTML = `
+        <div style="font-size:1.1rem;color:#e0d0ff;line-height:1.8;margin:12px 0;padding:0 8px;">"${quoteList[idx].text}"</div>
+        <div style="color:#9d4edd;font-size:0.95rem;margin-top:8px;">${quoteList[idx].author}</div>
+        <button class="tool-close-btn" onclick="showRandomQuote()" style="margin-top:16px;margin-right:8px;">换一条</button>
+    `;
+}
+
+//8.🎰 抽卡模拟器
+function openGachaPopup(){
+    dialogTitle.innerText = "🎰 抽卡模拟器";
+    dialogResult.innerHTML = `
+        <div style="font-size:0.95rem;color:#ccc;margin-bottom:10px;">概率：SSR 5% / SR 20% / R 75%</div>
+        <div id="gachaResult" style="min-height:80px;margin:12px 0;"></div>
+        <button class="tool-close-btn" onclick="singleGacha()" style="margin-right:8px;">单抽</button>
+        <button class="tool-close-btn" onclick="tenGacha()">十连抽</button>
+    `;
+    showMask();
+}
+function rollCard(){
+    const r = Math.random() * 100;
+    if(r < 5) return {rank:"SSR", color:"#ffd700", name:"五星角色"};
+    if(r < 25) return {rank:"SR", color:"#b388ff", name:"四星角色"};
+    return {rank:"R", color:"#90caf9", name:"三星角色"};
+}
+function singleGacha(){
+    const card = rollCard();
+    document.getElementById('gachaResult').innerHTML = `
+        <div style="display:inline-block;padding:16px 28px;border-radius:12px;border:2px solid ${card.color};background:rgba(0,0,0,0.3);">
+            <div style="font-size:1.8rem;font-weight:bold;color:${card.color};">${card.rank}</div>
+            <div style="font-size:1rem;color:#ccc;margin-top:4px;">${card.name}</div>
+        </div>
+    `;
+}
+function tenGacha(){
+    let html = '<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;">';
+    for(let i=0;i<10;i++){
+        const card = rollCard();
+        html += `<div style="padding:10px 4px;border-radius:8px;border:1px solid ${card.color};background:rgba(0,0,0,0.3);text-align:center;">
+            <div style="font-size:1rem;font-weight:bold;color:${card.color};">${card.rank}</div>
+        </div>`;
+    }
+    html += '</div>';
+    document.getElementById('gachaResult').innerHTML = html;
+}
+
+
+//9.🎮 猜数字游戏
+let guessTarget = 0;
+let guessAttempts = 0;
+function openGuessNumber(){
+    guessTarget = Math.floor(Math.random()*100)+1;
+    guessAttempts = 0;
+    dialogTitle.innerText = "🎮 猜数字游戏（1-100）";
+    dialogResult.innerHTML = `
+        <div style="font-size:1rem;color:#ccc;margin-bottom:12px;">我想了一个1-100的数字，猜猜看！</div>
+        <input type="number" id="guessInput" min="1" max="100" placeholder="输入数字" style="width:120px;padding:10px;border-radius:8px;border:1px solid #9d4edd;background:#2a2a3a;color:#fff;text-align:center;font-size:1.1rem;margin-bottom:12px;">
+        <div style="font-size:1.1rem;color:#ffd700;min-height:30px;margin-bottom:12px;" id="guessHint">等待你的猜测...</div>
+        <div style="font-size:0.9rem;color:#888;margin-bottom:12px;" id="guessCount">已猜次数：0</div>
+        <button class="tool-close-btn" onclick="submitGuess()" style="margin-right:8px;">猜！</button>
+        <button class="tool-close-btn" onclick="openGuessNumber()">重新开始</button>
+    `;
+    showMask();
+}
+function submitGuess(){
+    const input = document.getElementById('guessInput');
+    const val = parseInt(input.value);
+    if(isNaN(val) || val < 1 || val > 100){
+        document.getElementById('guessHint').innerText = "请输入1-100之间的数字！";
+        return;
+    }
+    guessAttempts++;
+    document.getElementById('guessCount').innerText = `已猜次数：${guessAttempts}`;
+    if(val === guessTarget){
+        document.getElementById('guessHint').innerHTML = `🎉 恭喜你猜对了！答案就是 ${guessTarget}！<br>用了 ${guessAttempts} 次！`;
+        document.getElementById('guessHint').style.color = "#36c975";
+    }else if(val < guessTarget){
+        document.getElementById('guessHint').innerText = "📈 太小了！再大一点～";
+        document.getElementById('guessHint').style.color = "#ffd700";
+    }else{
+        document.getElementById('guessHint').innerText = "📉 太大了！再小一点～";
+        document.getElementById('guessHint').style.color = "#ff4c5c";
+    }
+    input.value = "";
+    input.focus();
+}
+
+//10.🪨 石头剪刀布
+let rpsScore = {win:0, lose:0, draw:0};
+function openRPS(){
+    dialogTitle.innerText = "🪨 石头剪刀布";
+    dialogResult.innerHTML = `
+        <div style="font-size:1rem;color:#ccc;margin-bottom:16px;">选择你的出招！</div>
+        <div style="display:flex;gap:12px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;">
+            <button onclick="playRPS('rock')" style="font-size:2rem;padding:16px 24px;border-radius:12px;border:2px solid #9d4edd;background:rgba(157,78,221,0.2);cursor:pointer;">🪨</button>
+            <button onclick="playRPS('scissors')" style="font-size:2rem;padding:16px 24px;border-radius:12px;border:2px solid #9d4edd;background:rgba(157,78,221,0.2);cursor:pointer;">✂️</button>
+            <button onclick="playRPS('paper')" style="font-size:2rem;padding:16px 24px;border-radius:12px;border:2px solid #9d4edd;background:rgba(157,78,221,0.2);cursor:pointer;">📄</button>
+        </div>
+        <div style="font-size:1.1rem;color:#ffd700;min-height:30px;margin-bottom:12px;" id="rpsResult">出招吧！</div>
+        <div style="font-size:0.9rem;color:#888;" id="rpsScore">胜：0 负：0 平：0</div>
+    `;
+    showMask();
+}
+function playRPS(player){
+    const choices = ['rock','scissors','paper'];
+    const emojis = {rock:'🪨', scissors:'✂️', paper:'📄'};
+    const names = {rock:'石头', scissors:'剪刀', paper:'布'};
+    const computer = choices[Math.floor(Math.random()*3)];
+    let result, color;
+    if(player === computer){
+        result = `平局！你出${names[player]}，电脑出${names[computer]}`;
+        color = "#ffd700";
+        rpsScore.draw++;
+    }else if(
+        (player === 'rock' && computer === 'scissors') ||
+        (player === 'scissors' && computer === 'paper') ||
+        (player === 'paper' && computer === 'rock')
+    ){
+        result = `🎉 你赢了！你出${names[player]}，电脑出${names[computer]}`;
+        color = "#36c975";
+        rpsScore.win++;
+    }else{
+        result = `😢 你输了！你出${names[player]}，电脑出${names[computer]}`;
+        color = "#ff4c5c";
+        rpsScore.lose++;
+    }
+    document.getElementById('rpsResult').innerHTML = `${emojis[player]} vs ${emojis[computer]}<br>${result}`;
+    document.getElementById('rpsResult').style.color = color;
+    document.getElementById('rpsScore').innerText = `胜：${rpsScore.win} 负：${rpsScore.lose} 平：${rpsScore.draw}`;
+}
+
+//11.🎰 老虎机
+function openSlotMachine(){
+    dialogTitle.innerText = "🎰 老虎机";
+    dialogResult.innerHTML = `
+        <div style="font-size:2.5rem;letter-spacing:8px;margin:16px 0;font-family:Consolas,monospace;" id="slotReels">❓❓❓</div>
+        <div style="font-size:1.1rem;color:#ffd700;min-height:30px;margin-bottom:16px;" id="slotResult">点击开始拉杆！</div>
+        <button class="tool-close-btn" onclick="spinSlot()">🎰 拉杆！</button>
+    `;
+    showMask();
+}
+function spinSlot(){
+    const symbols = ['🍒','🍋','🍊','🍇','⭐','💎','7️⃣'];
+    const reels = document.getElementById('slotReels');
+    const result = document.getElementById('slotResult');
+    result.innerText = "转动中...";
+    let spins = 0;
+    const spinInterval = setInterval(()=>{
+        reels.innerText = symbols[Math.floor(Math.random()*symbols.length)] + 
+                          symbols[Math.floor(Math.random()*symbols.length)] + 
+                          symbols[Math.floor(Math.random()*symbols.length)];
+        spins++;
+        if(spins >= 10){
+            clearInterval(spinInterval);
+            const r1 = symbols[Math.floor(Math.random()*symbols.length)];
+            const r2 = symbols[Math.floor(Math.random()*symbols.length)];
+            const r3 = symbols[Math.floor(Math.random()*symbols.length)];
+            reels.innerText = r1 + r2 + r3;
+            if(r1 === r2 && r2 === r3){
+                if(r1 === '7️⃣'){
+                    result.innerHTML = "🎉🎉🎉 JACKPOT！！！三个7！超级大奖！";
+                    result.style.color = "#ffd700";
+                }else if(r1 === '💎'){
+                    result.innerHTML = "💎 三个钻石！大奖！";
+                    result.style.color = "#22cbd0";
+                }else{
+                    result.innerHTML = `🎉 三个${r1}！中奖了！`;
+                    result.style.color = "#36c975";
+                }
+            }else if(r1 === r2 || r2 === r3 || r1 === r3){
+                result.innerHTML = "✨ 两个相同！小奖！";
+                result.style.color = "#ffd700";
+            }else{
+                result.innerHTML = "😢 没中奖，再试一次吧！";
+                result.style.color = "#ff4c5c";
+            }
+        }
+    }, 80);
+}
+
+//12.🔮 魔法8球
+function openMagic8Ball(){
+    dialogTitle.innerText = "🔮 魔法8球";
+    dialogResult.innerHTML = `
+        <div style="font-size:1rem;color:#ccc;margin-bottom:12px;">在心里默念一个问题，然后点击魔法球！</div>
+        <div style="font-size:4rem;margin:20px 0;cursor:pointer;transition:transform 0.3s;" id="magicBall" onclick="shakeMagic8Ball()">🔮</div>
+        <div style="font-size:1.2rem;color:#b898e8;min-height:40px;margin-bottom:12px;" id="magicAnswer">点击魔法球获取答案...</div>
+        <button class="tool-close-btn" onclick="shakeMagic8Ball()">再问一次</button>
+    `;
+    showMask();
+}
+function shakeMagic8Ball(){
+    const answers = [
+        "✅ 毫无疑问，是的！",
+        "✅ 是的，一定！",
+        "✅ 我认为是的",
+        "✅ 大概率是的",
+        "🤔  signs point to yes（迹象表明是的）",
+        "🤔 问问你自己的心",
+        "🤔 现在不太好说",
+        "🤔  concentrate and ask again（集中精神再问一次）",
+        "❌ 别指望了",
+        "❌ 我的回答是不",
+        "❌ 我的消息说不",
+        "❌ 非常可疑"
+    ];
+    const ball = document.getElementById('magicBall');
+    const answer = document.getElementById('magicAnswer');
+    ball.style.transform = "rotate(360deg) scale(1.2)";
+    answer.innerText = "魔法球正在思考...";
+    answer.style.color = "#888";
+    setTimeout(()=>{
+        ball.style.transform = "rotate(0deg) scale(1)";
+        const pick = answers[Math.floor(Math.random()*answers.length)];
+        answer.innerText = pick;
+        if(pick.startsWith("✅")) answer.style.color = "#36c975";
+        else if(pick.startsWith("❌")) answer.style.color = "#ff4c5c";
+        else answer.style.color = "#ffd700";
+    }, 800);
+}
+
+</script>
+
+    <script>
+        // 背景切换功能
+        var themeToggle = document.getElementById('themeToggle');
+        var body = document.body;
+        
+        // 检查本地存储中是否有保存的主题偏好
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark-mode');
+        }
+        
+        themeToggle.addEventListener('click', function() {
+            body.classList.toggle('dark-mode');
+            if (body.classList.contains('dark-mode')) {
+                localStorage.setItem('theme', 'dark');
+            } else {
+                localStorage.setItem('theme', 'light');
+            }
+        });
+    </script>
+</body>
+</html>
