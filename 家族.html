@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>别闹我有药 - 游戏家族主页</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", sans-serif;
+            scroll-behavior: smooth;
+        }
+        body {
+            background-color: #0f0f17;
+            color: #ffffff;
+            line-height: 1.7;
+            opacity: 0;
+            animation: bodyFade 1s ease forwards;
+        }
+        @keyframes bodyFade {
+            to { opacity: 1; }
+        }
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        /* ========== 顶部栏｜紫色毛玻璃效果 ========== */
+        header {
+            background: rgba(123, 44, 191, 0.22);
+            backdrop-filter: blur(18px) saturate(150%);
+            -webkit-backdrop-filter: blur(18px) saturate(150%);
+            border-bottom: 1px solid rgba(157, 78, 221, 0.25);
+            padding: 1.2rem 0;
+            box-shadow: 0 4px 20px rgba(123, 44, 191, 0.18);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+            transition: background 0.35s ease;
+        }
+        .header-wrap {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap:12px;
+        }
+        .family-name {
+            font-size: 1.7rem;
+            font-weight:bold;
+        }
+        .top-link a {
+            display:inline-block;
+            background:#fff;
+            color:#7b2cbf;
+            padding:8px 20px;
+            border-radius:30px;
+            text-decoration:none;
+            font-weight:600;
+            transition: 0.35s ease;
+        }
+        .top-link a:hover{
+            transform: translateY(-3px);
+            box-shadow:0 6px 18px rgba(157,78,221,0.55);
+        }
+        /* 板块 滚动动画 */
+        .section{
+            padding:60px 0;
+            opacity:0;
+            transform: translateY(40px);
+            transition: all 0.75s ease-out;
+        }
+        .section.active{
+            opacity:1;
+            transform: translateY(0);
+        }
+        .sec-title{
+            text-align:center;
+            font-size:1.6rem;
+            color:#9d4edd;
+            margin-bottom:36px;
+        }
+        .sec-title::after{
+            content:"";
+            display:block;
+            width:70px;
+            height:3px;
+            background:linear-gradient(90deg,#7b2cbf,#9d4edd);
+            margin:10px auto 0;
+            border-radius:2px;
+        }
+        /* 家族简介区域 【在这里改简介文字】 */
+        .intro-card{
+            background:rgba(123,44,191,0.12);
+            border:1px solid rgba(157,78,221,0.25);
+            border-radius:16px;
+            padding:28px;
+            text-align:center;
+        }
+        /* 成员卡片 */
+        .member-box{
+            display:flex;
+            justify-content:center;
+            gap:28px;
+            flex-wrap:wrap;
+        }
+        .member-card{
+            width:270px;
+            background:rgba(123,44,191,0.16);
+            border:1px solid rgba(157,78,221,0.3);
+            border-radius:20px;
+            padding:32px 22px;
+            text-align:center;
+            transition:0.4s ease;
+        }
+        .member-card:hover{
+            transform: translateY(-7px);
+            box-shadow:0 8px 26px rgba(123,44,191,0.32);
+        }
+        .role-tag{
+            display:inline-block;
+            background:linear-gradient(135deg,#7b2cbf,#9d4edd);
+            padding:4px 14px;
+            border-radius:20px;
+            font-size:0.9rem;
+            margin-bottom:14px;
+        }
+        .m-name{
+            font-size:1.4rem;
+            margin-bottom:18px;
+        }
+        .qq-btn{
+            display:inline-block;
+            background:#9d4edd;
+            color:#fff;
+            text-decoration:none;
+            padding:9px 20px;
+            border-radius:30px;
+            transition:0.35s ease;
+        }
+        .qq-btn:hover{
+            background:#7b2cbf;
+            box-shadow:0 4px 14px rgba(123,44,191,0.45);
+        }
+        /* 战绩截图板块 */
+        .screenshot-card{
+            background:rgba(123,44,191,0.12);
+            border:1px solid rgba(157,78,221,0.25);
+            border-radius:16px;
+            padding:24px;
+            text-align:center;
+            transition:0.35s ease;
+        }
+        .screenshot-card:hover{
+            box-shadow:0 8px 26px rgba(123,44,191,0.32);
+        }
+        .screenshot-card img{
+            width:100%;
+            border-radius:12px;
+            display:block;
+        }
+        .screenshot-desc{
+            margin-top:14px;
+            color:#cccccc;
+            font-size:0.95rem;
+        }
+        footer{
+            padding:32px 0;
+            text-align:center;
+            color:#aaaaaa;
+            font-size:0.88rem;
+            border-top:1px solid rgba(157,78,221,0.2);
+        }
+        @media(max-width:700px){
+            .family-name{
+                font-size:1.3rem;
+            }
+            .member-card{
+                width:100%;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部：QQ群链接放在最前面 -->
+<header id="mainHeader">
+    <div class="container header-wrap">
+        <div class="family-name">别闹我有药</div>
+        <div class="top-link">
+            <a href="https://qun.qq.com/universal-share/share?ac=1&svctype=5&tempid=h5_group_info&busi_data=eyJncm91cENvZGUiOiIxMDQ1NDcyNjEwIn0%3D" target="_blank">
+                <i class="fa-solid fa-users"></i> 加入QQ群
+            </a>
+        </div>
+    </div>
+</header>
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族简介</h2>
+        <!-- ======================
+            修改家族简介：改下面p标签里面文字即可
+        ====================== -->
+        <div class="intro-card">
+            <p>此处填写家族简介，家族宗旨、招人要求等内容。</p>
+        </div>
+    </div>
+</section>
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族核心管理</h2>
+        <div class="member-box">
+            <!-- 族长 -->
+            <div class="member-card">
+                <div class="role-tag">家族族长</div>
+                <div class="m-name">青空空</div>
+                <a class="qq-btn" href="mqq://card/show_pslcard?src_type=internal&version=1&uin=3497382642&card_type=person&source=sharecard">
+                    <i class="fa-brands fa-qq"></i> 打开QQ资料
+                </a>
+            </div>
+            <!-- 副组长 -->
+            <div class="member-card">
+                <div class="role-tag">副组长</div>
+                <div class="m-name">小药神青空（枫铃）</div>
+                <a class="qq-btn" href="mqq://card/show_pslcard?src_type=internal&version=1&uin=3817304344&card_type=person&source=sharecard">
+                    <i class="fa-brands fa-qq"></i> 打开QQ资料
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 家族战绩图片板块（已填入你的图片链接） -->
+<section class="section">
+    <div class="container">
+        <h2 class="sec-title">家族排行</h2>
+        <div class="screenshot-card">
+            <img src="https://picui.ogmua.cn/s1/2026/09/02/6a97ecc5eab7f.webp" alt="家族周活跃榜截图">
+            <div class="screenshot-desc">家族周活跃榜 · 当前第一名</div>
+        </div>
+    </div>
+</section>
+
+<footer>
+    <div class="container">
+        <p>本网站为玩家家族自制站点，与游戏官方无任何关联。所有信息手动录入，仅用于社群交流，不收集账号密码。</p>
+    </div>
+</footer>
+<script>
+// 滚动视口动画
+const sections = document.querySelectorAll('.section');
+const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(item=>{
+        if(item.isIntersecting){
+            item.target.classList.add('active');
+        }
+    })
+},{threshold:0.15});
+sections.forEach(s=>observer.observe(s));
+
+// 滚动时毛玻璃加深
+const headerDom = document.querySelector('#mainHeader');
+window.addEventListener('scroll',()=>{
+    if(window.scrollY > 40){
+        headerDom.style.background = 'rgba(123, 44, 191, 0.42)';
+    }else{
+        headerDom.style.background = 'rgba(123, 44, 191, 0.22)';
+    }
+})
+</script>
+</body>
+</html>
