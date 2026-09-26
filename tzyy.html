@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>墓碑 · 逃之 yaoya</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🪦</text></svg>">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(ellipse at 50% 30%, #1a1a2e 0%, #0d0d1a 50%, #050508 100%);
+    font-family: 'Georgia', 'Times New Roman', serif;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* 星空 */
+  .stars {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .star {
+    position: absolute;
+    background: #fff;
+    border-radius: 50%;
+    animation: twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; }
+    50% { opacity: 0.9; }
+  }
+
+  /* 雾气 */
+  .fog {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 180px;
+    background: linear-gradient(to top, rgba(80,80,100,0.15) 0%, transparent 100%);
+    animation: fogMove 20s linear infinite;
+    pointer-events: none;
+  }
+  .fog:nth-child(2) {
+    animation-duration: 30s;
+    animation-direction: reverse;
+    opacity: 0.6;
+    bottom: -20px;
+  }
+  @keyframes fogMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* 地面 */
+  .ground {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(to bottom, #1a1a1a 0%, #0a0a0a 100%);
+    border-top: 1px solid rgba(60,60,70,0.3);
+  }
+
+  /* 墓碑容器 */
+  .tombstone-wrap {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: float 6s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  /* 墓碑主体 */
+  .tombstone {
+    position: relative;
+    width: 200px;
+    height: 320px;
+    background: linear-gradient(145deg, #5a5a66 0%, #3d3d48 30%, #2a2a33 70%, #1e1e26 100%);
+    border-radius: 100px 100px 8px 8px;
+    box-shadow:
+      inset -8px -8px 20px rgba(0,0,0,0.5),
+      inset 8px 8px 20px rgba(255,255,255,0.05),
+      0 20px 60px rgba(0,0,0,0.7),
+      0 0 80px rgba(100,100,140,0.08);
+  }
+
+  /* 墓碑纹理 */
+  .tombstone::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    border-radius: 100px 100px 8px 8px;
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(255,255,255,0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(0,0,0,0.15) 0%, transparent 40%);
+    pointer-events: none;
+  }
+
+  /* 裂纹 */
+  .crack {
+    position: absolute;
+    background: rgba(0,0,0,0.3);
+    border-radius: 2px;
+  }
+  .crack-1 {
+    top: 60px; left: 45px;
+    width: 2px; height: 80px;
+    transform: rotate(15deg);
+  }
+  .crack-2 {
+    top: 180px; right: 50px;
+    width: 2px; height: 60px;
+    transform: rotate(-10deg);
+  }
+
+  /* 十字架装饰 */
+  .cross {
+    position: absolute;
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 50px;
+  }
+  .cross::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 6px; height: 50px;
+    background: linear-gradient(to bottom, #8a8a96, #5a5a66);
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+  .cross::after {
+    content: '';
+    position: absolute;
+    top: 12px; left: 50%;
+    transform: translateX(-50%);
+    width: 24px; height: 6px;
+    background: linear-gradient(to bottom, #8a8a96, #5a5a66);
+    border-radius: 3px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  }
+
+  /* 名字刻字 */
+  .name {
+    position: absolute;
+    top: 118px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 30px;
+    font-weight: bold;
+    color: #1a1a22;
+    text-shadow:
+      1px 1px 1px rgba(255,255,255,0.08),
+      -1px -1px 2px rgba(0,0,0,0.6);
+    letter-spacing: 3px;
+    white-space: nowrap;
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+  }
+
+  /* 分隔线 */
+  .divider {
+    position: absolute;
+    top: 175px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(0,0,0,0.4), transparent);
+  }
+
+  /* RIP 文字 */
+  .rip {
+    position: absolute;
+    top: 195px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    color: #2a2a33;
+    letter-spacing: 6px;
+    text-shadow: 1px 1px 1px rgba(255,255,255,0.05);
+  }
+
+  /* 生卒年 */
+  .dates {
+    position: absolute;
+    top: 230px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 13px;
+    color: #33333d;
+    letter-spacing: 3px;
+    white-space: nowrap;
+  }
+
+  /* 墓碑底座 */
+  .base {
+    width: 260px;
+    height: 30px;
+    background: linear-gradient(to bottom, #3a3a44 0%, #25252d 100%);
+    border-radius: 4px;
+    margin-top: -4px;
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.6),
+      inset 0 2px 4px rgba(255,255,255,0.05);
+  }
+
+  .base-shadow {
+    width: 300px;
+    height: 20px;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0.5) 0%, transparent 70%);
+    margin-top: -8px;
+  }
+
+  /* 月上狗标识 */
+  .brand-logo {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    opacity: 0.75;
+    animation: logoGlow 4s ease-in-out infinite;
+  }
+  @keyframes logoGlow {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 0.9; }
+  }
+  .brand-logo svg {
+    filter: drop-shadow(0 0 6px rgba(240,232,216,0.3));
+  }
+  .brand-text {
+    font-size: 15px;
+    color: #c8c0b0;
+    letter-spacing: 4px;
+    font-family: 'Georgia', 'Noto Serif SC', serif;
+    text-shadow: 0 0 8px rgba(200,192,176,0.2);
+  }
+
+  /* 卡通大便 */
+  .poop {
+    position: absolute;
+    z-index: 8;
+    animation: poopBounce 3s ease-in-out infinite;
+  }
+  .poop-left {
+    left: -100px;
+    bottom: 30px;
+    animation-delay: 0s;
+  }
+  .poop-right {
+    right: -100px;
+    bottom: 40px;
+    animation-delay: 1.2s;
+  }
+  @keyframes poopBounce {
+    0%, 100% { transform: translateY(0) rotate(-3deg); }
+    50% { transform: translateY(-5px) rotate(3deg); }
+  }
+
+  /* 香炉 */
+  .incense-burner {
+    position: absolute;
+    bottom: 26px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 12;
+  }
+  .burner-svg {
+    display: block;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+  }
+
+  /* 香 */
+  .incense-group {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 55px;
+    z-index: 11;
+  }
+  .incense-stick {
+    position: absolute;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to top, #7a5c1e, #a07d28 60%, #c4a050);
+    border-radius: 1px;
+  }
+  .incense-stick:nth-child(1) { left: 12px; height: 48px; transform: rotate(-8deg); transform-origin: bottom; }
+  .incense-stick:nth-child(2) { left: 24px; height: 55px; }
+  .incense-stick:nth-child(3) { left: 36px; height: 48px; transform: rotate(8deg); transform-origin: bottom; }
+  .incense-stick::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 5px;
+    height: 5px;
+    background: radial-gradient(circle, #ff6a00 0%, #ff3300 60%, #cc0000 100%);
+    border-radius: 50%;
+    box-shadow: 0 0 8px 3px rgba(255,80,0,0.5);
+    animation: emberPulse 1.5s infinite ease-in-out;
+  }
+  @keyframes emberPulse {
+    0%, 100% { box-shadow: 0 0 6px 2px rgba(255,80,0,0.4); transform: translateX(-50%) scale(1); }
+    50% { box-shadow: 0 0 12px 4px rgba(255,80,0,0.7); transform: translateX(-50%) scale(1.2); }
+  }
+
+  /* 烟雾 */
+  .smoke {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: radial-gradient(circle, rgba(220,215,200,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: smokeRise 4s infinite ease-out;
+  }
+  .smoke-1 { left: 10px; bottom: 50px; animation-delay: 0s; }
+  .smoke-2 { left: 22px; bottom: 56px; animation-delay: 1.3s; }
+  .smoke-3 { left: 34px; bottom: 50px; animation-delay: 2.6s; }
+  @keyframes smokeRise {
+    0% { transform: translateY(0) translateX(0) scale(0.6); opacity: 0; }
+    15% { opacity: 0.5; }
+    50% { transform: translateY(-50px) translateX(8px) scale(1.5); opacity: 0.3; }
+    100% { transform: translateY(-110px) translateX(-5px) scale(2.8); opacity: 0; }
+  }
+
+  @keyframes aromaFloat {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    20% { opacity: 0.8; }
+    50% { transform: translateY(-60px) translateX(15px); opacity: 0.5; }
+    80% { opacity: 0.3; }
+    100% { transform: translateY(-130px) translateX(-10px); opacity: 0; }
+  }
+
+  /* 香气粒子 */
+  .aroma {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #ffd88a;
+    border-radius: 50%;
+    box-shadow: 0 0 6px 1px rgba(255,216,138,0.5);
+    pointer-events: none;
+    animation: aromaFloat 6s infinite ease-in-out;
+  }
+
+  /* 萤火虫 */
+  .firefly {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #c8ff8a;
+    border-radius: 50%;
+    box-shadow: 0 0 8px 2px rgba(200,255,138,0.5);
+    animation: fireflyFloat 8s infinite ease-in-out;
+    pointer-events: none;
+  }
+  @keyframes fireflyFloat {
+    0%, 100% { transform: translate(0, 0); opacity: 0; }
+    10% { opacity: 1; }
+    25% { transform: translate(30px, -40px); }
+    50% { transform: translate(-20px, -80px); opacity: 0.8; }
+    75% { transform: translate(40px, -50px); }
+    90% { opacity: 1; }
+  }
+
+  @media (max-width: 480px) {
+    .tombstone {
+      width: 160px;
+      height: 260px;
+    }
+    .name { font-size: 22px; top: 98px; letter-spacing: 2px; }
+    .cross { top: 28px; transform: translateX(-50%) scale(0.85); }
+    .divider { top: 145px; }
+    .rip { top: 162px; font-size: 13px; }
+    .dates { top: 192px; font-size: 11px; }
+    .base { width: 210px; }
+    .base-shadow { width: 250px; }
+    .brand-logo { margin-top: 14px; gap: 8px; }
+    .brand-logo svg { width: 32px; height: 32px; }
+    .brand-text { font-size: 13px; letter-spacing: 3px; }
+    .poop svg { width: 56px; height: 56px; }
+    .poop-left { left: -68px; bottom: 22px; }
+    .poop-right { right: -68px; bottom: 28px; }
+    .incense-burner svg { width: 50px; height: 28px; }
+    .incense-group { width: 40px; height: 42px; bottom: 22px; }
+    .incense-stick:nth-child(1) { left: 9px; height: 36px; }
+    .incense-stick:nth-child(2) { left: 19px; height: 42px; }
+    .incense-stick:nth-child(3) { left: 29px; height: 36px; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- 星空 -->
+  <div class="stars" id="stars"></div>
+
+  <!-- 雾气 -->
+  <div class="fog"></div>
+  <div class="fog"></div>
+
+  <!-- 地面 -->
+  <div class="ground"></div>
+
+  <!-- 墓碑 -->
+  <div class="tombstone-wrap">
+    <div class="tombstone">
+      <div class="cross"></div>
+      <div class="crack crack-1"></div>
+      <div class="crack crack-2"></div>
+      <div class="name">逃之 yaoya</div>
+      <div class="divider"></div>
+      <div class="rip">R.I.P</div>
+      <div class="dates">∞ — ∞</div>
+    </div>
+
+    <!-- 左侧卡通大便 -->
+    <div class="poop poop-left">
+      <svg viewBox="0 0 64 64" width="76" height="76" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="poopGrad1" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#b8943a"/>
+            <stop offset="100%" style="stop-color:#6b4f12"/>
+          </linearGradient>
+        </defs>
+        <path d="M32 12 C26 12 22 16 22 21 C17 21 13 26 13 31 C9 31 6 36 6 41 C6 48 16 55 32 55 C48 55 58 48 58 41 C58 36 55 31 51 31 C51 26 47 21 42 21 C42 16 38 12 32 12 Z" fill="url(#poopGrad1)"/>
+        <ellipse cx="24" cy="28" rx="5" ry="3" fill="#c9a54a" opacity="0.5"/>
+        <circle cx="26" cy="38" r="3" fill="#1a1a1a"/>
+        <circle cx="38" cy="38" r="3" fill="#1a1a1a"/>
+        <circle cx="27" cy="37" r="1" fill="#fff"/>
+        <circle cx="39" cy="37" r="1" fill="#fff"/>
+        <path d="M27 46 Q32 51 37 46" stroke="#1a1a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="21" cy="43" rx="3" ry="2" fill="#d4766a" opacity="0.4"/>
+        <ellipse cx="43" cy="43" rx="3" ry="2" fill="#d4766a" opacity="0.4"/>
+      </svg>
+    </div>
+
+    <!-- 右侧卡通大便 -->
+    <div class="poop poop-right">
+      <svg viewBox="0 0 64 64" width="72" height="72" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="poopGrad2" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#a88430"/>
+            <stop offset="100%" style="stop-color:#5a4210"/>
+          </linearGradient>
+        </defs>
+        <path d="M32 14 C27 14 23 17 23 22 C19 22 15 26 15 31 C11 31 8 36 8 40 C8 47 17 53 32 53 C47 53 56 47 56 40 C56 36 53 31 50 31 C50 26 46 22 42 22 C42 17 37 14 32 14 Z" fill="url(#poopGrad2)"/>
+        <ellipse cx="25" cy="29" rx="4" ry="2.5" fill="#b8943a" opacity="0.45"/>
+        <circle cx="27" cy="38" r="2.8" fill="#1a1a1a"/>
+        <circle cx="37" cy="38" r="2.8" fill="#1a1a1a"/>
+        <circle cx="28" cy="37" r="0.9" fill="#fff"/>
+        <circle cx="38" cy="37" r="0.9" fill="#fff"/>
+        <path d="M28 45 Q32 49 36 45" stroke="#1a1a1a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <ellipse cx="22" cy="42" rx="2.5" ry="1.8" fill="#d4766a" opacity="0.35"/>
+        <ellipse cx="42" cy="42" rx="2.5" ry="1.8" fill="#d4766a" opacity="0.35"/>
+      </svg>
+    </div>
+
+    <!-- 香炉 -->
+    <div class="incense-burner">
+      <svg class="burner-svg" viewBox="0 0 80 50" width="68" height="42" xmlns="http://www.w3.org/2000/svg">
+        <!-- 炉耳 -->
+        <path d="M12 22 Q5 22 5 15 Q5 10 10 10" stroke="#5a4535" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <path d="M68 22 Q75 22 75 15 Q75 10 70 10" stroke="#5a4535" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+        <!-- 炉身 -->
+        <path d="M8 20 L13 40 L67 40 L72 20 Z" fill="#5a4535"/>
+        <path d="M8 20 L13 40 L67 40 L72 20 Z" fill="url(#burnerGrad)" opacity="0.5"/>
+        <defs>
+          <linearGradient id="burnerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#000;stop-opacity:0.3"/>
+            <stop offset="50%" style="stop-color:#fff;stop-opacity:0.1"/>
+            <stop offset="100%" style="stop-color:#000;stop-opacity:0.3"/>
+          </linearGradient>
+        </defs>
+        <!-- 炉口 -->
+        <ellipse cx="40" cy="20" rx="33" ry="6.5" fill="#6b5540"/>
+        <ellipse cx="40" cy="20" rx="28" ry="4.5" fill="#2e2418"/>
+        <!-- 炉腿 -->
+        <rect x="17" y="40" width="7" height="9" rx="2" fill="#4a3a2a"/>
+        <rect x="56" y="40" width="7" height="9" rx="2" fill="#4a3a2a"/>
+        <!-- 装饰纹 -->
+        <line x1="25" y1="28" x2="25" y2="36" stroke="#3a2e22" stroke-width="1.5"/>
+        <line x1="40" y1="28" x2="40" y2="36" stroke="#3a2e22" stroke-width="1.5"/>
+        <line x1="55" y1="28" x2="55" y2="36" stroke="#3a2e22" stroke-width="1.5"/>
+      </svg>
+    </div>
+
+    <!-- 线香与烟雾 -->
+    <div class="incense-group">
+      <div class="incense-stick"></div>
+      <div class="incense-stick"></div>
+      <div class="incense-stick"></div>
+      <div class="smoke smoke-1"></div>
+      <div class="smoke smoke-2"></div>
+      <div class="smoke smoke-3"></div>
+    </div>
+
+    <div class="base"></div>
+    <div class="base-shadow"></div>
+    <div class="brand-logo">
+      <svg viewBox="0 0 80 80" width="40" height="40" xmlns="http://www.w3.org/2000/svg">
+        <!-- 弯月 -->
+        <path d="M55 15 A28 28 0 1 0 55 65 A22 22 0 1 1 55 15 Z" fill="#f0e8d8" opacity="0.92"/>
+        <!-- 狗剪影 -->
+        <g fill="#16162a">
+          <!-- 头 -->
+          <ellipse cx="37" cy="34" rx="8" ry="7"/>
+          <!-- 左耳 -->
+          <path d="M31 29 L27 20 L36 27 Z"/>
+          <!-- 右耳 -->
+          <path d="M43 29 L47 20 L38 27 Z"/>
+          <!-- 眼睛 -->
+          <circle cx="34" cy="33" r="1.2" fill="#f0e8d8"/>
+          <circle cx="40" cy="33" r="1.2" fill="#f0e8d8"/>
+          <!-- 鼻子 -->
+          <ellipse cx="37" cy="37" rx="1.5" ry="1" fill="#f0e8d8"/>
+          <!-- 身体 -->
+          <ellipse cx="37" cy="49" rx="10" ry="8"/>
+          <!-- 前腿 -->
+          <rect x="30" y="53" width="4" height="9" rx="2"/>
+          <!-- 后腿 -->
+          <rect x="40" y="53" width="4" height="9" rx="2"/>
+          <!-- 尾巴 -->
+          <path d="M47 47 Q57 40 55 50 Q54 54 47 51 Z"/>
+        </g>
+      </svg>
+      <span class="brand-text">月上狗</span>
+    </div>
+  </div>
+
+  <!-- 萤火虫 -->
+  <div class="firefly" style="top: 40%; left: 20%; animation-delay: 0s;"></div>
+  <div class="firefly" style="top: 55%; left: 75%; animation-delay: 2s;"></div>
+  <div class="firefly" style="top: 35%; left: 65%; animation-delay: 4s;"></div>
+  <div class="firefly" style="top: 60%; left: 30%; animation-delay: 6s;"></div>
+
+<script>
+  // 生成星星
+  const starsContainer = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 60 + '%';
+    const size = Math.random() * 2 + 1;
+    star.style.width = size + 'px';
+    star.style.height = size + 'px';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (Math.random() * 2 + 2) + 's';
+    starsContainer.appendChild(star);
+  }
+
+  // 生成香气粒子
+  const wrap = document.querySelector('.tombstone-wrap');
+  for (let i = 0; i < 12; i++) {
+    const aroma = document.createElement('div');
+    aroma.className = 'aroma';
+    aroma.style.left = (40 + Math.random() * 20) + '%';
+    aroma.style.bottom = (80 + Math.random() * 60) + 'px';
+    aroma.style.animationDelay = (Math.random() * 6) + 's';
+    aroma.style.animationDuration = (4 + Math.random() * 4) + 's';
+    const s = 2 + Math.random() * 3;
+    aroma.style.width = s + 'px';
+    aroma.style.height = s + 'px';
+    wrap.appendChild(aroma);
+  }
+</script>
+
+</body>
+</html>
+<!-- （注：内容由AI生成） -->
